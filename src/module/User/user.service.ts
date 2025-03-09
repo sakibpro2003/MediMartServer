@@ -1,10 +1,11 @@
-
 import { TUser } from "./user.interface";
 import { User } from "./user.model";
 import bcrypt from "bcrypt";
 
 const createUserIntoDb = async (userData: TUser) => {
+  console.log(userData, "from service");
   const result = await User.create(userData);
+
   return result;
 };
 const updateUserInfoIntoDb = async (_id: string, userData: Partial<TUser>) => {
@@ -17,14 +18,13 @@ const getAllUserFromDb = async () => {
 };
 const changeUserStatusIntoDb = async (userId: string, isBlocked: boolean) => {
   const result = await User.findByIdAndUpdate(
-    userId, 
-    { isBlocked },  
-    { new: true }  
+    userId,
+    { isBlocked },
+    { new: true }
   );
 
   return result;
 };
-
 
 const changeUserPasswordIntoDb = async (
   email: string,
@@ -35,7 +35,6 @@ const changeUserPasswordIntoDb = async (
   if (!email) {
     return { success: false, message: "Unauthorized request. Email missing!" };
   }
-  console.log(oldPassword, newPassword, confirmPassword, "old,new,confirm");
 
   if (!oldPassword || !newPassword || !confirmPassword) {
     return { success: false, message: "All password fields are required!" };
@@ -67,5 +66,6 @@ export const UserServices = {
   createUserIntoDb,
   changeUserPasswordIntoDb,
   getAllUserFromDb,
-  changeUserStatusIntoDb,updateUserInfoIntoDb
+  changeUserStatusIntoDb,
+  updateUserInfoIntoDb,
 };

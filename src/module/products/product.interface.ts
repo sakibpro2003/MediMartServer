@@ -1,15 +1,20 @@
 import { Document, Types } from "mongoose";
+
 interface IProduct extends Document {
   name: string;
-  brand: string;
-  price: number;
-  type: string;
   description: string;
-  quantity: any;
+  price: number;
   inStock: boolean;
+  quantity: number;
+  requiredPrescription: boolean;
+  expiryDate: Date;
+  manufacturer: {
+    name: string;
+    address?: string;
+    contact?: string;
+  };
   createdAt?: Date;
-  updatedAt?: Date; 
+  updatedAt?: Date;
 }
+
 export default IProduct;
-
-

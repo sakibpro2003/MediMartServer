@@ -1,40 +1,36 @@
 import { model, Schema } from "mongoose";
 import IProduct from "./product.interface";
 
-const productSchema = new Schema<IProduct>(
+const productsSchema = new Schema<IProduct>(
   {
     name: { type: String, required: true, trim: true },
-    brand: { type: String, required: true, trim: true },
+    description: { type: String, required: true, trim: true },
     price: {
       type: Number,
       required: true,
       min: [0, "Price must be a positive number"],
     },
-    type: {
-      type: String,
-      required: true,
-      trim: true,
-      enum: {
-        values: ["Mountain", "Road", "Hybrid", "BMX", "Electric"],
-        message: "{VALUE} is not a valid product type.",
-      },
-    },
-    description: { type: String, required: true, trim: true },
+    inStock: { type: Boolean, required: true, default: true },
     quantity: {
       type: Number,
       required: true,
       min: [0, "Quantity must be a positive number"],
     },
-    inStock: { type: Boolean, required: true, default: true },
+    requiredPrescription: { type: Boolean, required: true, default: false },
+    expiryDate: { type: Date, required: true },
+    manufacturer: {
+      name: { type: String, required: true, trim: true },
+      address: { type: String, trim: true },
+      contact: { type: String, trim: true },
+    },
   },
   {
     timestamps: {
       createdAt: "created_at",
       updatedAt: "updated_at",
     },
-    collection: "Products",
   }
 );
 
-const Product = model<IProduct>("Product", productSchema);
+const Product = model<IProduct>("Product", productsSchema);
 export default Product;

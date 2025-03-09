@@ -1,43 +1,28 @@
-import mongoose, { Schema, model } from "mongoose";
-import { TOrder } from "./order.interface";
-import { number } from "zod";
+import { model, Schema } from "mongoose";
+import { IOrder } from "./order.interface";
 
-const OrderSchema = new Schema<TOrder>(
+const orderSchema = new Schema<IOrder>(
   {
-    quantity: {
-      type: Number,
-      required:true
-    },
-    address: {
-      type: String,
-    },
-    phone:{
-      type:String,
-    },
-    products: {
-      type: Schema.Types.ObjectId,
-      ref: "Product",
-    },
-    userId: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-    },
-    totalPrice: {
-      type: Number,
-    },
-    paymentMethod: {
-      type: String,
-      enum: ["bKash", "Nagad", "Cash on Delivery", "Card"],
-    },
+    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    items: [
+      {
+        product: { type: Schema.Types.ObjectId, ref: "Product", required: true },
+        quantity: { type: Number, required: true, min: 1 },
+      },
+    ],
+    totalPrice: { type: Number, required: true },
     status: {
       type: String,
-      enum: ["Pending", "Paid", "Shipped", "Completed", "Cancelled"],
+      enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"],
       default: "Pending",
     },
+    prescription: { type: String },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    collection: "Orders",
+  }
 );
 
-const Order = model<TOrder>("Order", OrderSchema);
-
+const Order = model<IOrder>("Order", orderSchema);
 export default Order;

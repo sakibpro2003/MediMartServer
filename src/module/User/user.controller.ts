@@ -9,9 +9,9 @@ import AppError from "../../app/error/AppError";
 const createUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const userData = req.body;
+    console.log(userData, "from controller")
     const email = userData.email;
     const phone = userData.phone;
-    console.log(email, "pay email");
     const findUser = await User.findOne({ email });
     const findUserByPhone = await User.findOne({ phone });
     if (findUser) {

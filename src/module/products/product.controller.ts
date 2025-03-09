@@ -8,7 +8,7 @@ const createProduct = async (req: Request, res: Response) => {
     console.log(payload)
     const result = await userService.createProduct(payload);
     res.json({
-      message: "success fully create",
+      message: "Product created successfully",
       data: result,
     });
   } catch (error) {

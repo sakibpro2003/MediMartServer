@@ -7,7 +7,7 @@ import { OrderPayload } from "../../types/OrderPayloadTypes";
 import { ObjectId } from "mongoose";
 
 const createOrder = async (payload: OrderPayload) => {
-  if (!payload?.products?.length) {
+  if (!payload?.items?.length) {
     throw new AppError(httpStatus.NOT_ACCEPTABLE, "Order is not specified");
   }
 
