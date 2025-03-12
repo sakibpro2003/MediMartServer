@@ -75,14 +75,9 @@ const updateUserInfo = catchAsync(async (req: Request, res: Response) => {
 
 const getAllUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    // const userData = req.body;
 
     const result = await UserServices.getAllUserFromDb();
-    // const responseData = {
-    //   _id: result?.email,
-    //   name: result?.name,
-    //   email: result?.email,
-    // };
+  
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,

@@ -18,7 +18,6 @@ const addToCart = catchAsync(async (req: Request, res: Response) => {
   const user = getUser?._id as unknown as ObjectId;
   console.log(user, "user form cont");
   const findCart = await Cart.findOne({ user });
-  
 
   const payload = req.body;
 
@@ -90,20 +89,50 @@ const clearCart = catchAsync(async (req: Request, res: Response) => {
 //   });
 // });
 
-// const getAllOrders = catchAsync(async (req: Request, res: Response) => {
-//   const orders = await orderService.getAllOrdersFromDb();
-//   return res.status(httpStatus.OK).json({
-//     success: true,
-//     message: "Orders retrieved successfully!",
-//     data: orders,
-//   });
-// });
+const getAllProductsFromCart = catchAsync(
+  async (req: Request, res: Response) => {
+    if (!req.user) {
+      return res.status(httpStatus.UNAUTHORIZED).json({
+        success: false,
+        message: "Unauthorized: User ID not found in token.",
+      });
+    }
+    const email = req.user.email;
+    const getUser = await User.findOne({ email: email });
+    const user = getUser?._id as unknown as ObjectId;
+    const cartProducts = await cartServices.getAllProductsFromCartService(user);
+    return res.status(httpStatus.OK).json({
+      success: true,
+      message: "Orders retrieved successfully!",
+      data: cartProducts,
+    });
+  }
+);
+
+const removeItemController = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) {
+    return res.status(httpStatus.UNAUTHORIZED).json({
+      success: false,
+      message: "Unauthorized: User ID not found in token.",
+    });
+  }
+  const {productId} = req.params;
+  const email = req.user.email;
+  const getUser = await User.findOne({ email: email });
+  const user = getUser?._id as unknown as ObjectId;
+
+  const result = await cartServices.removeItemFromCartDb(productId,user);
+  // const cartProducts = await cartServices.getAllProductsFromCartService(user);
+  return res.status(httpStatus.OK).json({
+    success: true,
+    message: "Item removed successfully!",
+    data: result,
+  });
+});
 
 export const cartController = {
   addToCart,
   clearCart,
-  //   getOrders,
-  //   getAllOrders,
-  //   deleteOrder,
-  //   changeOrderStatus,
+  removeItemController,
+  getAllProductsFromCart,
 };

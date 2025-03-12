@@ -3,7 +3,8 @@ import AppError from "../../app/error/AppError";
 
 import Cart from "./cart.model";
 import { TCartPayload } from "../../types/cartPayload.types";
-import { ObjectId } from "mongoose";
+import mongoose, { ObjectId, Types } from "mongoose";
+import { cartRoutes } from "./cart.router";
 
 const addToCart = async ({
   payload,
@@ -25,16 +26,40 @@ const clearCart = async (id: string) => {
   return clearCart;
 };
 
-// const getOrders = async ({ userId }: { userId?: string }) => {
-//   return await Order.find({userId}).populate("userId", "-password").populate("products");
+const getAllProductsFromCartService = async (user) => {
+  const res = await Cart.find({ user }).populate("product");
+  console.log(res, "check");
+  return res;
+};
+// const removeItemFromCartDb = async (_id,user) => {
+//   console.log(_id,"_id")
+//   console.log(user,"user")
+//   // const res = await Cart.findOneAndDelete(_id,user);
+//   const res = await Cart.find({_id,user})
+//   return res;
 // };
-// // const getOrders = async (userId?: string) => {
-// //   return await Order.find(userId).populate("userId", "-password").populate("products");
-// // };
 
-// const getAllOrdersFromDb = async () => {
-//   return await Order.find().populate("userId", "-password").populate("products");
-// };
+const removeItemFromCartDb = async (_id, user) => {
+  try {
+    console.log("Before conversion:", _id, " | ", user);
+
+    const objectId = new mongoose.Types.ObjectId(_id);
+    const userId = new mongoose.Types.ObjectId(user); // Ensure `user` is an ObjectId
+
+    console.log("After conversion:", objectId, " | ", userId);
+    const find = await Cart.findOne({user:userId,_id:objectId})
+    console.log(find,"prod1")
+
+    const res = await Cart.findOneAndDelete({ _id: objectId, user: userId });
+
+    console.log(res ? "Item removed" : "Item not found");
+
+    return res;
+  } catch (error) {
+    console.error("Error removing item:", error);
+    throw error;
+  }
+};
 
 // const deleteOrderFromDb = async (orderId: string) => {
 //   return await Order.findByIdAndDelete(orderId);
@@ -52,7 +77,8 @@ export const cartServices = {
   addToCart,
   clearCart,
   //   getOrders,
-  //   getAllOrdersFromDb,
+  removeItemFromCartDb,
+  getAllProductsFromCartService,
   //   deleteOrderFromDb,
   //   changeOrderStatusIntoDb,
 };
