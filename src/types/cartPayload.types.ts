@@ -1,4 +1,7 @@
+import { ObjectId } from "mongoose";
+
 export type TCartPayload = {
-  items: [];
+  product:ObjectId;
+  quantity?: string;
   totalPrice: string;
 };

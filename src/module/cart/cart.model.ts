@@ -4,12 +4,8 @@ import { ICart } from "./cart.interface";
 const cartSchema = new Schema<ICart>(
   {
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    items: [
-      {
-        product: { type: Schema.Types.ObjectId, ref: "product", required: true },
-        quantity: { type: Number, required: true, min: 1 },
-      },
-    ],
+    product: { type: Schema.Types.ObjectId, ref: "products", required: true },
+    quantity: { type: Number },
     totalPrice: { type: Number, required: true, default: 0 },
   },
   {

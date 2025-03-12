@@ -4,6 +4,7 @@ import IProduct from "./product.interface";
 const productsSchema = new Schema<IProduct>(
   {
     name: { type: String, required: true, trim: true },
+    image: { type: String, required: true },
     description: { type: String, required: true, trim: true },
     price: {
       type: Number,

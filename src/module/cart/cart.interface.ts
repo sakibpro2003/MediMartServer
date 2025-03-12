@@ -9,7 +9,8 @@ export interface ICartItem {
 
 export interface ICart extends Document {
   user: Types.ObjectId | TUser;
-  items: ICartItem[];
+  product:Types.ObjectId;
+  quantity:number;
   totalPrice: number;
   createdAt?: Date;
   updatedAt?: Date;

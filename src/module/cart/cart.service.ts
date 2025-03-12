@@ -12,10 +12,6 @@ const addToCart = async ({
   payload: TCartPayload;
   user: ObjectId;
 }) => {
-  if (!Array.isArray(payload?.items) || payload.items.length === 0) {
-    throw new AppError(httpStatus.NOT_ACCEPTABLE, "Cart is empty");
-  }
-
   const cartData = { ...payload, user };
   console.log(cartData, "cartdata");
   const res = await Cart.create(cartData);
@@ -24,7 +20,7 @@ const addToCart = async ({
 };
 
 //Clear cart logic
-const clearCart = async (id:string) => {
+const clearCart = async (id: string) => {
   const getCart = await Cart.deleteOne({ user: id });
   return clearCart;
 };

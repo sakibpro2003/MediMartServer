@@ -24,7 +24,7 @@ const getProduct = async (req: Request, res: Response) => {
   try {
     const result = await userService.getProduct();
     res.json({
-      message: "Bicycles retrieved successfully",
+      message: "Medicines retrieved successfully",
       status: true,
       data: result,
     });

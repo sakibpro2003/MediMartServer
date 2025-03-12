@@ -18,9 +18,7 @@ const addToCart = catchAsync(async (req: Request, res: Response) => {
   const user = getUser?._id as unknown as ObjectId;
   console.log(user, "user form cont");
   const findCart = await Cart.findOne({ user });
-  // if(findCart){
-
-  // }
+  
 
   const payload = req.body;
 

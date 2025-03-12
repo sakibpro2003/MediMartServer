@@ -3,6 +3,7 @@ import { Document, Types } from "mongoose";
 interface IProduct extends Document {
   name: string;
   description: string;
+  image: string;
   price: number;
   inStock: boolean;
   quantity: number;
