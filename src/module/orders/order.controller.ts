@@ -67,7 +67,6 @@ const changeOrderStatus = catchAsync(async (req: Request, res: Response) => {
   const orderId = req?.params?.orderId;
   // console.log(orderId, "iddddddddddddddddddddd");
   const { status } = req.body;
-  console.log(status)
 
   if (!orderId || !status) {
     return res.status(httpStatus.BAD_REQUEST).json({

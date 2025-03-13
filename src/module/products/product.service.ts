@@ -29,7 +29,6 @@ const createProduct = async (payload: IProduct): Promise<IProduct> => {
 };
 const getProduct = async () => {
   const result = await Product.find();
-  console.log(result,'sevices result ')
   return result;
 };
 const getSingleProduct = async (id: string) => {

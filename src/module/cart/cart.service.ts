@@ -14,10 +14,22 @@ const addToCart = async ({
   user: ObjectId;
 }) => {
   const cartData = { ...payload, user };
-  console.log(cartData, "cartdata");
   const res = await Cart.create(cartData);
 
-  return addToCart;
+  return res;
+};
+const increaseAmountIntoDb = async ({
+  payload,
+  user,
+}: {
+  payload
+  user: ObjectId;
+}) => {
+  console.log(payload,'update payload')
+  const cartData = { ...payload, user };
+  const res = await Cart.findOneAndUpdate()
+
+  return res;
 };
 
 //Clear cart logic
@@ -41,18 +53,14 @@ const getAllProductsFromCartService = async (user) => {
 
 const removeItemFromCartDb = async (_id, user) => {
   try {
-    console.log("Before conversion:", _id, " | ", user);
 
     const objectId = new mongoose.Types.ObjectId(_id);
     const userId = new mongoose.Types.ObjectId(user); // Ensure `user` is an ObjectId
 
-    console.log("After conversion:", objectId, " | ", userId);
     const find = await Cart.findOne({user:userId,_id:objectId})
-    console.log(find,"prod1")
 
     const res = await Cart.findOneAndDelete({ _id: objectId, user: userId });
 
-    console.log(res ? "Item removed" : "Item not found");
 
     return res;
   } catch (error) {
@@ -79,6 +87,7 @@ export const cartServices = {
   //   getOrders,
   removeItemFromCartDb,
   getAllProductsFromCartService,
+  increaseAmountIntoDb
   //   deleteOrderFromDb,
   //   changeOrderStatusIntoDb,
 };

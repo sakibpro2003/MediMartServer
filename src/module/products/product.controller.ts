@@ -5,7 +5,6 @@ import { userService } from "./product.service";
 const createProduct = async (req: Request, res: Response) => {
   try {
     const payload = req.body;
-    console.log(payload)
     const result = await userService.createProduct(payload);
     res.json({
       message: "Product created successfully",

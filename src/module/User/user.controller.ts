@@ -9,7 +9,6 @@ import AppError from "../../app/error/AppError";
 const createUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const userData = req.body;
-    console.log(userData, "from controller")
     const email = userData.email;
     const phone = userData.phone;
     const findUser = await User.findOne({ email });
@@ -42,9 +41,7 @@ const updateUserInfo = catchAsync(async (req: Request, res: Response) => {
 
   const email = user?.email;
   userPayload.email = email;
-  console.log(email)
   const findUser = await User.findOne({email})
-  console.log(findUser,"user")
   const _id = findUser?._id;
 
   if (!_id) {
@@ -89,7 +86,6 @@ const getAllUser = catchAsync(
 const changeUserStatus = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { userId, isBlocked } = req.body;
-    console.log(`User ID: ${userId}, Block Status: ${isBlocked}`);
 
     const result = await UserServices.changeUserStatusIntoDb(userId, isBlocked);
 
@@ -112,7 +108,6 @@ const changeUserStatus = catchAsync(
 const changePassword = catchAsync(async (req: Request, res: Response) => {
   const { oldPassword, newPassword, confirmPassword } = req.body;
   const email = req?.user?.email;
-  console.log(confirmPassword, "confirm pass from controller");
 
   if (!email) {
     return sendResponse(res, {
