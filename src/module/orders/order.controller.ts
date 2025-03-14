@@ -12,16 +12,30 @@ const createOrder = catchAsync(async (req: Request, res: Response) => {
       message: "Unauthorized: User ID not found in token.",
     });
   }
+
   const email = req.user.email;
   const getUser = await User.findOne({ email: email });
-  // console.log(getUser,"user")
-  const userId = getUser?._id;
-  console.log(userId,"id")
+  if (!getUser) {
+    return res.status(httpStatus.NOT_FOUND).json({
+      success: false,
+      message: "User not found.",
+    });
+  }
+  
+  const userId = getUser._id;
+  
+  // Fetch cart items of the user
+  const cartItems = await Cart.find({ user: userId }).populate("product");
+  
+  if (!cartItems.length) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      success: false,
+      message: "Cart is empty. Cannot create an order.",
+    });
+  }
 
-  const getCartItems = await Cart.find({user:userId})
-  console.log(getCartItems,'cart items00')
-  // const payload = { ...req.body, userId };
-  const newOrder = await orderService.createOrder(getCartItems);
+  // Call service to create the order
+  const newOrder = await orderService.createOrder(userId, cartItems);
 
   return res.status(httpStatus.CREATED).json({
     success: true,
@@ -29,6 +43,8 @@ const createOrder = catchAsync(async (req: Request, res: Response) => {
     data: newOrder,
   });
 });
+
+
 
 const getOrders = catchAsync(async (req: Request, res: Response) => {
   const userEmail = req.user.email;

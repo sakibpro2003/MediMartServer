@@ -4,34 +4,43 @@ import Product from "../products/product.model";
 // import Order from "./order.model";
 import { User } from "../User/user.model";
 import { OrderPayload } from "../../types/OrderPayloadTypes";
-import { ObjectId } from "mongoose";
-import { Order } from "./order.model";
+import mongoose, { ObjectId } from "mongoose";
+import Order from "./order.model";
+import Cart from "../cart/cart.model";
+// import { Order } from "./order.model";
 
-const createOrder = async (cartItems) => {
-  // if (!payload?.items?.length) {
-  //   throw new AppError(httpStatus.NOT_ACCEPTABLE, "Order is not specified");
-  // }
+const createOrder = async (userId: mongoose.Types.ObjectId, cartItems: any) => {
+  // Process cart items into order format
+  const orderProducts = cartItems.map((item: any) => ({
+    product: item.product._id,
+    quantity: item.quantity,
+    totalPrice: item.product.price * item.quantity,
+  }));
 
-  // const getProduct = await Product.findById(payload.products);
-  // if (!getProduct) {
-  //   throw new AppError(httpStatus.NOT_FOUND, "Product not found");
-  // }
+  // Calculate total amount
+  const totalAmount = orderProducts.reduce((sum, item) => sum + item.totalPrice, 0);
 
-  // if (payload.quantity > getProduct.quantity) {
-  //   throw new AppError(
-  //     httpStatus.CONFLICT,
-  //     `${getProduct.quantity} products in stock. But you ordered ${payload.quantity}`
-  //   );
-  // }
+  // Create the order
+  const order = await Order.create({
+    user: userId,
+    products: orderProducts,
+    totalAmount,
+  });
 
-  const order = await Order.create(cartItems);
+  // Reduce stock for ordered products
+  for (const item of cartItems) {
+    await Product.findByIdAndUpdate(item.product._id, {
+      $inc: { quantity: -item.quantity },
+    });
+  }
 
-  // getProduct.quantity -= payload.quantity;
-  // getProduct.inStock = getProduct.quantity > 0;
-  // await getProduct.save();
+  // Clear the user's cart after order is placed
+  await Cart.deleteMany({ user: userId });
 
   return order;
 };
+
+
 
 const getOrders = async ({ userId }: { userId?: string }) => {
   return await Order.find({userId}).populate("userId", "-password").populate("products");
