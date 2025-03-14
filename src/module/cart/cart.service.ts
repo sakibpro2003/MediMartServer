@@ -1,7 +1,10 @@
-
 import Cart from "./cart.model";
+import httpStatus from "http-status";
+
 import { TCartPayload } from "../../types/cartPayload.types";
 import mongoose, { ObjectId, Types } from "mongoose";
+import Product from "../products/product.model";
+import AppError from "../../app/error/AppError";
 
 const addToCart = async ({
   payload,
@@ -22,17 +25,34 @@ const increaseAmountIntoDb = async ({
   userId: mongoose.Types.ObjectId;
   objectProductId: mongoose.Types.ObjectId;
 }) => {
+  const product = await Product.findById(objectProductId);
+
+  if (!product) {
+    throw new AppError(httpStatus.NOT_FOUND, "Product not found");
+  }
+  const maxQuantity = product.quantity;
   const updatedCart = await Cart.findOneAndUpdate(
-    { user: userId, product: objectProductId }, // Find the correct cart item
-    { $inc: { quantity: 1 } }, // Increment quantity by 1
-    { new: true } // Return updated cart
+    { user: userId, product: objectProductId, quantity: { $lt: maxQuantity } },
+    { $inc: { quantity: 1 } },
+    { new: true }
   );
 
   return updatedCart;
 };
+const decreaseAmountIntoDb = async ({
+  userId,
+  objectProductId,
+}: {
+  userId: mongoose.Types.ObjectId;
+  objectProductId: mongoose.Types.ObjectId;
+}) => {
+  const updatedCart = await Cart.findOneAndUpdate(
+    { user: userId, product: objectProductId, quantity: { $gt: 1 } },
+    { $inc: { quantity: -1 } },
+    { new: true }
+  );
 
-export default {
-  increaseAmountIntoDb,
+  return updatedCart;
 };
 
 //Clear cart logic
@@ -46,17 +66,14 @@ const getAllProductsFromCartService = async (user) => {
   return res;
 };
 
-
 const removeItemFromCartDb = async (_id, user) => {
   try {
-
     const objectId = new mongoose.Types.ObjectId(_id);
     const userId = new mongoose.Types.ObjectId(user); // Ensure `user` is an ObjectId
 
-    const find = await Cart.findOne({user:userId,_id:objectId})
+    const find = await Cart.findOne({ user: userId, _id: objectId });
 
     const res = await Cart.findOneAndDelete({ _id: objectId, user: userId });
-
 
     return res;
   } catch (error) {
@@ -65,25 +82,14 @@ const removeItemFromCartDb = async (_id, user) => {
   }
 };
 
-// const deleteOrderFromDb = async (orderId: string) => {
-//   return await Order.findByIdAndDelete(orderId);
-// };
 
-// const changeOrderStatusIntoDb = async (orderId: string, status: string) => {
-//   return await Order.findByIdAndUpdate(
-//     orderId,
-//     { status },
-//     { new: true, runValidators: true }
-//   );
-// };
 
 export const cartServices = {
   addToCart,
   clearCart,
-  //   getOrders,
   removeItemFromCartDb,
   getAllProductsFromCartService,
-  increaseAmountIntoDb
-  //   deleteOrderFromDb,
-  //   changeOrderStatusIntoDb,
+  increaseAmountIntoDb,
+  decreaseAmountIntoDb,
+
 };

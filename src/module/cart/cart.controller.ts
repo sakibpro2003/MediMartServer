@@ -48,7 +48,6 @@ const increaseAmount = catchAsync(async (req: Request, res: Response) => {
 
   const { productId } = req.params;
 
-  // ✅ Check if productId is a valid ObjectId
   if (!mongoose.Types.ObjectId.isValid(productId)) {
     return res.status(httpStatus.BAD_REQUEST).json({
       success: false,
@@ -68,12 +67,8 @@ const increaseAmount = catchAsync(async (req: Request, res: Response) => {
 
   const userId = getUser._id;
 
-  // ✅ Convert to ObjectId correctly
+  // Convert to ObjectId
   const objectProductId = new mongoose.Types.ObjectId(productId);
-
-  // 🔍 Debugging log to see what `productId` is
-  console.log("Checking productId:", objectProductId);
-
   const product = await Product.findById(objectProductId);
 
   if (!product) {
@@ -84,6 +79,64 @@ const increaseAmount = catchAsync(async (req: Request, res: Response) => {
   }
 
   const updatedCart = await cartServices.increaseAmountIntoDb({
+    userId,
+    objectProductId,
+  });
+
+  if (!updatedCart) {
+    return res.status(httpStatus.NOT_FOUND).json({
+      success: false,
+      message: "Cart item not found",
+    });
+  }
+
+  return res.status(httpStatus.OK).json({
+    success: true,
+    message: "Quantity increased successfully!",
+    data: updatedCart,
+  });
+});
+const decreaseAmount = catchAsync(async (req: Request, res: Response) => {
+  if (!req.user) {
+    return res.status(httpStatus.UNAUTHORIZED).json({
+      success: false,
+      message: "Unauthorized: User ID not found in token.",
+    });
+  }
+
+  const { productId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      success: false,
+      message: "Invalid product ID format.",
+    });
+  }
+
+  const email = req.user.email;
+  const getUser = await User.findOne({ email });
+
+  if (!getUser) {
+    return res.status(httpStatus.NOT_FOUND).json({
+      success: false,
+      message: "User not found",
+    });
+  }
+
+  const userId = getUser._id;
+
+  // Convert to ObjectId
+  const objectProductId = new mongoose.Types.ObjectId(productId);
+  const product = await Product.findById(objectProductId);
+
+  if (!product) {
+    return res.status(httpStatus.NOT_FOUND).json({
+      success: false,
+      message: "Product not found in the database",
+    });
+  }
+
+  const updatedCart = await cartServices.decreaseAmountIntoDb({
     userId,
     objectProductId,
   });
@@ -179,5 +232,5 @@ export const cartController = {
   clearCart,
   removeItemController,
   getAllProductsFromCart,
-  increaseAmount,
+  increaseAmount,decreaseAmount
 };
