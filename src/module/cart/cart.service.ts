@@ -1,10 +1,7 @@
-import httpStatus from "http-status";
-import AppError from "../../app/error/AppError";
 
 import Cart from "./cart.model";
 import { TCartPayload } from "../../types/cartPayload.types";
 import mongoose, { ObjectId, Types } from "mongoose";
-import { cartRoutes } from "./cart.router";
 
 const addToCart = async ({
   payload,
@@ -19,17 +16,23 @@ const addToCart = async ({
   return res;
 };
 const increaseAmountIntoDb = async ({
-  payload,
-  user,
+  userId,
+  objectProductId,
 }: {
-  payload
-  user: ObjectId;
+  userId: mongoose.Types.ObjectId;
+  objectProductId: mongoose.Types.ObjectId;
 }) => {
-  console.log(payload,'update payload')
-  const cartData = { ...payload, user };
-  const res = await Cart.findOneAndUpdate()
+  const updatedCart = await Cart.findOneAndUpdate(
+    { user: userId, product: objectProductId }, // Find the correct cart item
+    { $inc: { quantity: 1 } }, // Increment quantity by 1
+    { new: true } // Return updated cart
+  );
 
-  return res;
+  return updatedCart;
+};
+
+export default {
+  increaseAmountIntoDb,
 };
 
 //Clear cart logic
@@ -40,16 +43,9 @@ const clearCart = async (id: string) => {
 
 const getAllProductsFromCartService = async (user) => {
   const res = await Cart.find({ user }).populate("product");
-  console.log(res, "check");
   return res;
 };
-// const removeItemFromCartDb = async (_id,user) => {
-//   console.log(_id,"_id")
-//   console.log(user,"user")
-//   // const res = await Cart.findOneAndDelete(_id,user);
-//   const res = await Cart.find({_id,user})
-//   return res;
-// };
+
 
 const removeItemFromCartDb = async (_id, user) => {
   try {
