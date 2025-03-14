@@ -1,33 +1,34 @@
 import httpStatus from "http-status";
 import AppError from "../../app/error/AppError";
 import Product from "../products/product.model";
-import Order from "./order.model";
+// import Order from "./order.model";
 import { User } from "../User/user.model";
 import { OrderPayload } from "../../types/OrderPayloadTypes";
 import { ObjectId } from "mongoose";
+import { Order } from "./order.model";
 
-const createOrder = async (payload: OrderPayload) => {
-  if (!payload?.items?.length) {
-    throw new AppError(httpStatus.NOT_ACCEPTABLE, "Order is not specified");
-  }
+const createOrder = async (cartItems) => {
+  // if (!payload?.items?.length) {
+  //   throw new AppError(httpStatus.NOT_ACCEPTABLE, "Order is not specified");
+  // }
 
-  const getProduct = await Product.findById(payload.products);
-  if (!getProduct) {
-    throw new AppError(httpStatus.NOT_FOUND, "Product not found");
-  }
+  // const getProduct = await Product.findById(payload.products);
+  // if (!getProduct) {
+  //   throw new AppError(httpStatus.NOT_FOUND, "Product not found");
+  // }
 
-  if (payload.quantity > getProduct.quantity) {
-    throw new AppError(
-      httpStatus.CONFLICT,
-      `${getProduct.quantity} products in stock. But you ordered ${payload.quantity}`
-    );
-  }
+  // if (payload.quantity > getProduct.quantity) {
+  //   throw new AppError(
+  //     httpStatus.CONFLICT,
+  //     `${getProduct.quantity} products in stock. But you ordered ${payload.quantity}`
+  //   );
+  // }
 
-  const order = await Order.create(payload);
+  const order = await Order.create(cartItems);
 
-  getProduct.quantity -= payload.quantity;
-  getProduct.inStock = getProduct.quantity > 0;
-  await getProduct.save();
+  // getProduct.quantity -= payload.quantity;
+  // getProduct.inStock = getProduct.quantity > 0;
+  // await getProduct.save();
 
   return order;
 };

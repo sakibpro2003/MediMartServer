@@ -1,13 +1,16 @@
 import { Document, Types } from "mongoose";
-import { ICartItem } from "../cart/cart.interface";
-import { TUser } from "../User/user.interface";
+
+export interface IOrderItem {
+  product: Types.ObjectId;
+  quantity: number;
+  price: number;
+}
 
 export interface IOrder extends Document {
-  user: Types.ObjectId | TUser;
-  items: ICartItem[];
-  totalPrice: number;
-  status: "Pending" | "Processing" | "Shipped" | "Delivered" | "Cancelled";
-  prescription?: string; 
-  createdAt?: Date;
-  updatedAt?: Date;
+  user: Types.ObjectId;
+  items: IOrderItem[];
+  totalAmount: number;
+  status: "pending" | "confirmed" | "shipped" | "delivered" | "cancelled";
+  createdAt: Date;
+  updatedAt: Date;
 }
