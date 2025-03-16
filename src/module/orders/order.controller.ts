@@ -23,6 +23,8 @@ const createOrder = catchAsync(async (req: Request, res: Response) => {
   }
   
   const userId = getUser._id;
+  const paymentDetails = req.body;
+  console.log(paymentDetails);
   
   // Fetch cart items of the user
   const cartItems = await Cart.find({ user: userId }).populate("product");
@@ -35,7 +37,7 @@ const createOrder = catchAsync(async (req: Request, res: Response) => {
   }
 
   // Call service to create the order
-  const newOrder = await orderService.createOrder(userId, cartItems);
+  const newOrder = await orderService.createOrder(userId, cartItems,paymentDetails);
 
   return res.status(httpStatus.CREATED).json({
     success: true,
@@ -95,7 +97,10 @@ const changeOrderStatus = catchAsync(async (req: Request, res: Response) => {
     });
   }
 
+  console.log(status,'status')
+
   const result = await orderService.changeOrderStatusIntoDb(orderId, status);
+
 
   if (!result) {
     return res.status(httpStatus.NOT_FOUND).json({

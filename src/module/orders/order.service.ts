@@ -9,7 +9,7 @@ import Order from "./order.model";
 import Cart from "../cart/cart.model";
 // import { Order } from "./order.model";
 
-const createOrder = async (userId: mongoose.Types.ObjectId, cartItems: any) => {
+const createOrder = async (userId: mongoose.Types.ObjectId, cartItems: any,paymentDetails) => {
   // Process cart items into order format
   const orderProducts = cartItems.map((item: any) => ({
     product: item.product._id,
@@ -18,13 +18,18 @@ const createOrder = async (userId: mongoose.Types.ObjectId, cartItems: any) => {
   }));
 
   // Calculate total amount
-  const totalAmount = orderProducts.reduce((sum, item) => sum + item.totalPrice, 0);
+  const totalAmount = orderProducts.reduce(
+    (sum, item) => sum + item.totalPrice,
+    0
+  );
+  const {address, paymentMethod} = paymentDetails;
 
   // Create the order
   const order = await Order.create({
     user: userId,
     products: orderProducts,
     totalAmount,
+    address,paymentMethod
   });
 
   // Reduce stock for ordered products
@@ -40,17 +45,21 @@ const createOrder = async (userId: mongoose.Types.ObjectId, cartItems: any) => {
   return order;
 };
 
-
-
 const getOrders = async ({ userId }: { userId?: string }) => {
-  return await Order.find({userId}).populate("userId", "-password").populate("products");
+  return await Order.find({ user: userId })
+    .populate({
+      path: "products.product", // Populate the product inside the products array
+    })
+    .populate("user");
 };
 // const getOrders = async (userId?: string) => {
 //   return await Order.find(userId).populate("userId", "-password").populate("products");
 // };
 
 const getAllOrdersFromDb = async () => {
-  return await Order.find().populate("userId", "-password").populate("products");
+  return await Order.find()
+    .populate("user", "-password")
+    .populate("products.product");
 };
 
 const deleteOrderFromDb = async (orderId: string) => {
@@ -70,6 +79,5 @@ export const orderService = {
   getOrders,
   getAllOrdersFromDb,
   deleteOrderFromDb,
-  changeOrderStatusIntoDb, 
+  changeOrderStatusIntoDb,
 };
-

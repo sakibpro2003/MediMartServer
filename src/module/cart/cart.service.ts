@@ -30,9 +30,9 @@ const increaseAmountIntoDb = async ({
   if (!product) {
     throw new AppError(httpStatus.NOT_FOUND, "Product not found");
   }
-  const maxQuantity = product.quantity;
+  // const maxQuantity = product.quantity;
   const updatedCart = await Cart.findOneAndUpdate(
-    { user: userId, product: objectProductId, quantity: { $lt: maxQuantity } },
+    { user: userId, product: objectProductId},
     { $inc: { quantity: 1 } },
     { new: true }
   );
@@ -93,3 +93,4 @@ export const cartServices = {
   decreaseAmountIntoDb,
 
 };
+

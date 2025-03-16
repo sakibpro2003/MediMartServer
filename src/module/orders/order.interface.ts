@@ -8,7 +8,9 @@ export interface IOrder extends Document {
     totalPrice: number;
   }[];
   totalAmount: number;
+  address:string;
   status: "pending" | "processing" | "completed" | "canceled";
+  paymentMethod: "Bkash" | "Nagad" | "COD" | "Card";
   createdAt: Date;
   updatedAt: Date;
 }
