@@ -5,7 +5,7 @@ import { UserController } from "./user.controller";
 
 const router = express.Router();
 
-router.get("/get-all-user",  UserController.getAllUser);
+router.get("/get-all-user",auth(USER_ROLE.ADMIN),  UserController.getAllUser);
 router.put(
   "/change-user-status",
   auth(USER_ROLE.ADMIN),

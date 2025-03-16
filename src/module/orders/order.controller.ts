@@ -21,14 +21,14 @@ const createOrder = catchAsync(async (req: Request, res: Response) => {
       message: "User not found.",
     });
   }
-  
+
   const userId = getUser._id;
   const paymentDetails = req.body;
   console.log(paymentDetails);
-  
+
   // Fetch cart items of the user
   const cartItems = await Cart.find({ user: userId }).populate("product");
-  
+
   if (!cartItems.length) {
     return res.status(httpStatus.BAD_REQUEST).json({
       success: false,
@@ -37,7 +37,11 @@ const createOrder = catchAsync(async (req: Request, res: Response) => {
   }
 
   // Call service to create the order
-  const newOrder = await orderService.createOrder(userId, cartItems,paymentDetails);
+  const newOrder = await orderService.createOrder(
+    userId,
+    cartItems,
+    paymentDetails
+  );
 
   return res.status(httpStatus.CREATED).json({
     success: true,
@@ -46,13 +50,21 @@ const createOrder = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-
-
 const getOrders = catchAsync(async (req: Request, res: Response) => {
   const userEmail = req.user.email;
   const user = await User.findOne({ email: userEmail });
   const userId = user?._id.toString();
   const orders = await orderService.getOrders({ userId });
+  return res.status(httpStatus.OK).json({
+    success: true,
+    message: "Orders retrieved successfully!",
+    data: orders,
+  });
+});
+const getOrdersByAdmin = catchAsync(async (req: Request, res: Response) => {
+  const _id = req.params;
+  console.log(_id,"by admin")
+  const orders = await orderService.getOrdersByAdminFromDb(_id);
   return res.status(httpStatus.OK).json({
     success: true,
     message: "Orders retrieved successfully!",
@@ -97,10 +109,9 @@ const changeOrderStatus = catchAsync(async (req: Request, res: Response) => {
     });
   }
 
-  console.log(status,'status')
+  console.log(status, "status");
 
   const result = await orderService.changeOrderStatusIntoDb(orderId, status);
-
 
   if (!result) {
     return res.status(httpStatus.NOT_FOUND).json({
@@ -130,5 +141,5 @@ export const orderController = {
   getOrders,
   getAllOrders,
   deleteOrder,
-  changeOrderStatus,
+  changeOrderStatus,getOrdersByAdmin
 };

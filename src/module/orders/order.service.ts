@@ -9,7 +9,11 @@ import Order from "./order.model";
 import Cart from "../cart/cart.model";
 // import { Order } from "./order.model";
 
-const createOrder = async (userId: mongoose.Types.ObjectId, cartItems: any,paymentDetails) => {
+const createOrder = async (
+  userId: mongoose.Types.ObjectId,
+  cartItems: any,
+  paymentDetails
+) => {
   // Process cart items into order format
   const orderProducts = cartItems.map((item: any) => ({
     product: item.product._id,
@@ -22,14 +26,15 @@ const createOrder = async (userId: mongoose.Types.ObjectId, cartItems: any,payme
     (sum, item) => sum + item.totalPrice,
     0
   );
-  const {address, paymentMethod} = paymentDetails;
+  const { address, paymentMethod } = paymentDetails;
 
   // Create the order
   const order = await Order.create({
     user: userId,
     products: orderProducts,
     totalAmount,
-    address,paymentMethod
+    address,
+    paymentMethod,
   });
 
   // Reduce stock for ordered products
@@ -48,7 +53,14 @@ const createOrder = async (userId: mongoose.Types.ObjectId, cartItems: any,payme
 const getOrders = async ({ userId }: { userId?: string }) => {
   return await Order.find({ user: userId })
     .populate({
-      path: "products.product", // Populate the product inside the products array
+      path: "products.product",
+    })
+    .populate("user");
+};
+const getOrdersByAdminFromDb = async ({ _id }: { _id?: string }) => {
+  return await Order.find({ user: _id })
+    .populate({
+      path: "products.product",
     })
     .populate("user");
 };
@@ -79,5 +91,5 @@ export const orderService = {
   getOrders,
   getAllOrdersFromDb,
   deleteOrderFromDb,
-  changeOrderStatusIntoDb,
+  changeOrderStatusIntoDb,getOrdersByAdminFromDb
 };
