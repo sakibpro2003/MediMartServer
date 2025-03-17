@@ -57,19 +57,22 @@ const getOrders = async ({ userId }: { userId?: string }) => {
     })
     .populate("user");
 };
-const getOrdersByAdminFromDb = async ({ _id }: { _id?: string }) => {
-  return await Order.find({ user: _id })
+const getOrdersByAdminFromDb = async () => {
+  return await Order.find()
     .populate({
       path: "products.product",
     })
     .populate("user");
 };
-// const getOrders = async (userId?: string) => {
-//   return await Order.find(userId).populate("userId", "-password").populate("products");
-// };
 
 const getAllOrdersFromDb = async () => {
   return await Order.find()
+    .populate("user", "-password")
+    .populate("products.product");
+};
+const getSuccessfullPaymentsFromDb = async () => {
+  const status = "completed"
+  return await Order.find({status})
     .populate("user", "-password")
     .populate("products.product");
 };
@@ -91,5 +94,7 @@ export const orderService = {
   getOrders,
   getAllOrdersFromDb,
   deleteOrderFromDb,
-  changeOrderStatusIntoDb,getOrdersByAdminFromDb
+  changeOrderStatusIntoDb,
+  getOrdersByAdminFromDb,
+  getSuccessfullPaymentsFromDb,
 };
