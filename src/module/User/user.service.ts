@@ -11,6 +11,10 @@ const updateUserInfoIntoDb = async (_id: string, userData: Partial<TUser>) => {
   const result = await User.findByIdAndUpdate(_id, userData, { new: true });
   return result;
 };
+const getUserProfileFromDb = async (email) => {
+  const result = await User.findOne(email).select("-password");
+  return result;
+};
 const getAllUserFromDb = async () => {
   const result = await User.find();
   return result;
@@ -66,5 +70,5 @@ export const UserServices = {
   changeUserPasswordIntoDb,
   getAllUserFromDb,
   changeUserStatusIntoDb,
-  updateUserInfoIntoDb,
+  updateUserInfoIntoDb,getUserProfileFromDb
 };
