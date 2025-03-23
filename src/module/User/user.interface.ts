@@ -5,7 +5,7 @@ export interface TUser extends JwtPayload {
   id: string;
   name: string;
   email: string;
-  address: string;
+  address?: string;
   password: string;
   role: "admin" | "customer";
   isBlocked: boolean;

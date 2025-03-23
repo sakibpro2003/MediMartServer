@@ -7,6 +7,7 @@ const cartSchema = new Schema<ICart>(
     product: { type: Schema.Types.ObjectId, ref: "Product", required: true },
     quantity: { type: Number },
     totalPrice: { type: Number, required: true, default: 0 },
+    isPrescriptionSubmitted:{type:Boolean, require:false, default:false}
   },
   {
     timestamps: true,
