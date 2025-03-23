@@ -88,6 +88,13 @@ const changeOrderStatusIntoDb = async (orderId: string, status: string) => {
     { new: true, runValidators: true }
   );
 };
+const changePrescriptionStatusIntoDb = async (orderId: string, isPrescriptionSubmitted: boolean) => {
+  return await Cart.findByIdAndUpdate(
+    orderId,
+    { isPrescriptionSubmitted },
+    { new: true, runValidators: true }
+  );
+};
 
 export const orderService = {
   createOrder,
@@ -96,5 +103,5 @@ export const orderService = {
   deleteOrderFromDb,
   changeOrderStatusIntoDb,
   getOrdersByAdminFromDb,
-  getSuccessfullPaymentsFromDb,
+  getSuccessfullPaymentsFromDb,changePrescriptionStatusIntoDb
 };

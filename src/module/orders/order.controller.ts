@@ -46,6 +46,8 @@ const createOrder = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+
+
 const getOrders = catchAsync(async (req: Request, res: Response) => {
   const userEmail = req.user.email;
   const user = await User.findOne({ email: userEmail });
@@ -147,6 +149,34 @@ const changeOrderStatus = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const changePrescriptionStatus = catchAsync(async (req: Request, res: Response) => {
+  const orderId = req?.params?.orderId;
+  const { status } = req.body;
+
+  if (!orderId || !status) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      success: false,
+      message: "Order ID and status are required",
+    });
+  }
+
+  console.log(status, "status");
+
+  const result = await orderService.changePrescriptionStatusIntoDb(orderId, status);
+
+  if (!result) {
+    return res.status(httpStatus.NOT_FOUND).json({
+      success: false,
+      message: "Order not found",
+    });
+  }
+
+  return res.status(httpStatus.OK).json({
+    success: true,
+    message: "Order status updated successfully!",
+    data: result,
+  });
+});
 
 const getAllOrders = catchAsync(async (req: Request, res: Response) => {
   const orders = await orderService.getAllOrdersFromDb();
@@ -170,5 +200,5 @@ export const orderController = {
   getOrders,
   getAllOrders,
   deleteOrder,
-  changeOrderStatus,getOrdersByAdmin,getSuccessfullPayments
+  changeOrderStatus,getOrdersByAdmin,getSuccessfullPayments,changePrescriptionStatus
 };

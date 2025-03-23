@@ -15,5 +15,6 @@ router.get("/:_id", auth( USER_ROLE.CUSTOMER,USER_ROLE.ADMIN), orderController.g
 router.get("/get-all-orders", auth(USER_ROLE.ADMIN), orderController.getAllOrders);
 router.delete("/:orderId", auth(USER_ROLE.ADMIN), orderController.deleteOrder);
 router.put("/:orderId", auth(USER_ROLE.ADMIN), orderController.changeOrderStatus);
+router.put("/submit-prescription/:orderId", auth(USER_ROLE.CUSTOMER), orderController.changePrescriptionStatus);
 
 export default router;
