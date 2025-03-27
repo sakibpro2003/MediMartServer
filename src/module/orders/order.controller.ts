@@ -4,6 +4,7 @@ import catchAsync from "../../app/utils/catchAsync";
 import { orderService } from "./order.service";
 import { User } from "../User/user.model";
 import Cart from "../cart/cart.model";
+import mongoose from "mongoose";
 
 const createOrder = catchAsync(async (req: Request, res: Response) => {
   if (!req.user) {
@@ -30,15 +31,22 @@ const createOrder = catchAsync(async (req: Request, res: Response) => {
     });
   }
   const requiresPrescription = cartItems.some(
-    (item) => (item.product as any).requiredPrescription && !item.isPrescriptionSubmitted
+    (item) =>
+      (item.product as any).requiredPrescription &&
+      !item.isPrescriptionSubmitted
   );
   if (requiresPrescription) {
     return res.status(httpStatus.BAD_REQUEST).json({
       success: false,
-      message: "Some items require a prescription. Please upload it before proceeding.",
+      message:
+        "Some items require a prescription. Please upload it before proceeding.",
     });
   }
-  const newOrder = await orderService.createOrder(userId, cartItems, paymentDetails);
+  const newOrder = await orderService.createOrder(
+    userId,
+    cartItems,
+    paymentDetails
+  );
   return res.status(httpStatus.CREATED).json({
     success: true,
     message: "Order created successfully!",
@@ -46,40 +54,48 @@ const createOrder = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-
-
 const getOrders = catchAsync(async (req: Request, res: Response) => {
   const userEmail = req.user.email;
   const user = await User.findOne({ email: userEmail });
-  const userId = user?._id.toString();//convert into ObjectId
-  const orders = await orderService.getOrders({ userId });
+  const userId = user?._id.toString();
+  const convertedId = new mongoose.Types.ObjectId(userId);
+  const orders = await orderService.getOrdersFromDb({ convertedId });
   return res.status(httpStatus.OK).json({
     success: true,
     message: "Orders retrieved successfully!",
     data: orders,
   });
 });
-// const getOrdersByAdmin = catchAsync(async (req: Request, res: Response) => {
-//   const _id = req.params;
-//   console.log(_id,"by admin")
-//   const orders = await orderService.getOrdersByAdminFromDb(_id);
-//   return res.status(httpStatus.OK).json({
-//     success: true,
-//     message: "Orders retrieved successfully!",
-//     data: orders,
-//   });
-// });
+const getUserSpecificOrders = catchAsync(
+  async (req: Request, res: Response) => {
+    const email = req.params;
+    console.log(email, "specific controller email");
+    const user = await User.findOne(email);
+    console.log(user, "user");
+    const userId = user?._id.toString();
+    console.log(userId, "user");
+    const convertedId = new mongoose.Types.ObjectId(userId);
+    const orders = await orderService.getOrdersFromDb({ convertedId });
+    return res.status(httpStatus.OK).json({
+      success: true,
+      message: "Orders retrieved successfully!",
+      data: orders,
+    });
+  }
+);
 
 const getOrdersByAdmin = catchAsync(async (req: Request, res: Response) => {
-  // const { _id } = req.params; // Extract _id from params
-  // console.log(_id,'ididididid')
-
-  // if (!_id || !mongoose.Types.ObjectId.isValid(_id)) {
-  //   return res.status(httpStatus.BAD_REQUEST).json({
-  //     success: false,
-  //     message: "Invalid or missing order ID",
-  //   });
-  // }
+  // const user = req.user;
+  // console.log(user, "user69");
+  // const {email} = user;
+  // const _id = await User.find(email)
+  // console.log('getOrdersByAdmin')
+  //   if (!_id || !mongoose.Types.ObjectId.isValid(_id)) {
+  //     return res.status(httpStatus.BAD_REQUEST).json({
+  //       success: false,
+  //       message: "Invalid or missing order ID",
+  //     });
+  //   }
 
   // const objectId = new mongoose.Types.ObjectId(_id); // Convert _id to ObjectId
   // console.log(objectId, "by admin");
@@ -93,7 +109,6 @@ const getOrdersByAdmin = catchAsync(async (req: Request, res: Response) => {
     data: orders,
   });
 });
-
 
 const deleteOrder = catchAsync(async (req: Request, res: Response) => {
   const orderId = req.params.orderId as string;
@@ -132,8 +147,6 @@ const changeOrderStatus = catchAsync(async (req: Request, res: Response) => {
     });
   }
 
-  console.log(status, "status");
-
   const result = await orderService.changeOrderStatusIntoDb(orderId, status);
 
   if (!result) {
@@ -149,34 +162,37 @@ const changeOrderStatus = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
-const changePrescriptionStatus = catchAsync(async (req: Request, res: Response) => {
-  const orderId = req?.params?.orderId;
-  const { status } = req.body;
+const changePrescriptionStatus = catchAsync(
+  async (req: Request, res: Response) => {
+    const orderId = req?.params?.orderId;
+    const { status } = req.body;
 
-  if (!orderId || !status) {
-    return res.status(httpStatus.BAD_REQUEST).json({
-      success: false,
-      message: "Order ID and status are required",
+    if (!orderId || !status) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        success: false,
+        message: "Order ID and status are required",
+      });
+    }
+
+    const result = await orderService.changePrescriptionStatusIntoDb(
+      orderId,
+      status
+    );
+
+    if (!result) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    return res.status(httpStatus.OK).json({
+      success: true,
+      message: "Order status updated successfully!",
+      data: result,
     });
   }
-
-  console.log(status, "status");
-
-  const result = await orderService.changePrescriptionStatusIntoDb(orderId, status);
-
-  if (!result) {
-    return res.status(httpStatus.NOT_FOUND).json({
-      success: false,
-      message: "Order not found",
-    });
-  }
-
-  return res.status(httpStatus.OK).json({
-    success: true,
-    message: "Order status updated successfully!",
-    data: result,
-  });
-});
+);
 
 const getAllOrders = catchAsync(async (req: Request, res: Response) => {
   const orders = await orderService.getAllOrdersFromDb();
@@ -186,19 +202,25 @@ const getAllOrders = catchAsync(async (req: Request, res: Response) => {
     data: orders,
   });
 });
-const getSuccessfullPayments = catchAsync(async (req: Request, res: Response) => {
-  const orders = await orderService.getSuccessfullPaymentsFromDb();
-  return res.status(httpStatus.OK).json({
-    success: true,
-    message: "Orders retrieved successfully!",
-    data: orders,
-  });
-});
+const getSuccessfullPayments = catchAsync(
+  async (req: Request, res: Response) => {
+    const orders = await orderService.getSuccessfullPaymentsFromDb();
+    return res.status(httpStatus.OK).json({
+      success: true,
+      message: "Orders retrieved successfully!",
+      data: orders,
+    });
+  }
+);
 
 export const orderController = {
   createOrder,
   getOrders,
   getAllOrders,
   deleteOrder,
-  changeOrderStatus,getOrdersByAdmin,getSuccessfullPayments,changePrescriptionStatus
+  changeOrderStatus,
+  getUserSpecificOrders,
+  getOrdersByAdmin,
+  getSuccessfullPayments,
+  changePrescriptionStatus,
 };

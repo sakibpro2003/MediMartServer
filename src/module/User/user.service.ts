@@ -11,7 +11,7 @@ const updateUserInfoIntoDb = async (_id: string, userData: Partial<TUser>) => {
   const result = await User.findByIdAndUpdate(_id, userData, { new: true });
   return result;
 };
-const getUserProfileFromDb = async (email) => {
+const getUserProfileFromDb = async (email: TUser) => {
   const result = await User.findOne(email).select("-password");
   return result;
 };
@@ -60,7 +60,6 @@ const changeUserPasswordIntoDb = async (
 
   const hashedPassword = await bcrypt.hash(newPassword, 12);
   await User.updateOne({ email }, { $set: { password: hashedPassword } });
-  // await user.save();
 
   return { success: true, message: "Password changed successfully!" };
 };
@@ -70,5 +69,6 @@ export const UserServices = {
   changeUserPasswordIntoDb,
   getAllUserFromDb,
   changeUserStatusIntoDb,
-  updateUserInfoIntoDb,getUserProfileFromDb
+  updateUserInfoIntoDb,
+  getUserProfileFromDb,
 };

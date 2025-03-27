@@ -5,6 +5,7 @@ import catchAsync from "../../app/utils/catchAsync";
 import sendResponse from "../../app/utils/sendResponse";
 import { User } from "./user.model";
 import AppError from "../../app/error/AppError";
+import { TUser } from "./user.interface";
 
 const createUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -42,14 +43,17 @@ const updateUserInfo = catchAsync(async (req: Request, res: Response) => {
 
   const email = user?.email;
   userPayload.email = email;
-  const findUser = await User.findOne({email})
+  const findUser = await User.findOne({ email });
   const _id = findUser?._id;
 
   if (!_id) {
     throw new AppError(httpStatus.BAD_REQUEST, "User ID is required");
   }
 
-  const result = await UserServices.updateUserInfoIntoDb(_id.toString(), userPayload);
+  const result = await UserServices.updateUserInfoIntoDb(
+    _id.toString(),
+    userPayload
+  );
 
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, "User not found or update failed");
@@ -58,7 +62,6 @@ const updateUserInfo = catchAsync(async (req: Request, res: Response) => {
   const responseData = {
     _id: result._id,
     name: result.name,
-    // email: result.email,
     phone: result.phone,
     gender: result.gender,
   };
@@ -75,29 +78,14 @@ const getUserProfile = catchAsync(async (req: Request, res: Response) => {
 
   const user = req.user;
 
-  const email = user?.email;
-  // userPayload.email = email;
+  const email = user?.email as string;
 
-  // const _id = findUser?._id;
-
-  // if (!_id) {
-  //   throw new AppError(httpStatus.BAD_REQUEST, "User ID is required");
-  // }
-
-  const result = await UserServices.getUserProfileFromDb({email});
-  console.log(result,"result")
+  const result = await UserServices.getUserProfileFromDb({ email });
+  console.log(result, "result");
 
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, "User not found or update failed");
   }
-
-  // const responseData = {
-  //   _id: result._id,
-  //   name: result.name,
-  //   // email: result.email,
-  //   phone: result.phone,
-  //   gender: result.gender,
-  // };
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -109,9 +97,8 @@ const getUserProfile = catchAsync(async (req: Request, res: Response) => {
 
 const getAllUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-
     const result = await UserServices.getAllUserFromDb();
-  
+
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
@@ -181,5 +168,6 @@ export const UserController = {
   createUser,
   updateUserInfo,
   getAllUser,
-  changeUserStatus,getUserProfile
+  changeUserStatus,
+  getUserProfile,
 };

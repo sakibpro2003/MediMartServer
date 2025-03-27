@@ -1,34 +1,29 @@
-import httpStatus from "http-status";
-import AppError from "../../app/error/AppError";
 import Product from "../products/product.model";
-// import Order from "./order.model";
-import { User } from "../User/user.model";
-import { OrderPayload } from "../../types/OrderPayloadTypes";
 import mongoose, { ObjectId } from "mongoose";
 import Order from "./order.model";
 import Cart from "../cart/cart.model";
-// import { Order } from "./order.model";
 
+type paymentDetails = {
+  address: string;
+  paymentMethod: ["Bkash", "Nagad", "COD", "Card"];
+};
 const createOrder = async (
   userId: mongoose.Types.ObjectId,
   cartItems: any,
-  paymentDetails
+  paymentDetails: paymentDetails
 ) => {
-  // Process cart items into order format
   const orderProducts = cartItems.map((item: any) => ({
     product: item.product._id,
     quantity: item.quantity,
     totalPrice: item.product.price * item.quantity,
   }));
 
-  // Calculate total amount
   const totalAmount = orderProducts.reduce(
-    (sum, item) => sum + item.totalPrice,
+    (sum: number, item: { totalPrice: number }) => sum + item.totalPrice,
     0
   );
   const { address, paymentMethod } = paymentDetails;
 
-  // Create the order
   const order = await Order.create({
     user: userId,
     products: orderProducts,
@@ -37,27 +32,30 @@ const createOrder = async (
     paymentMethod,
   });
 
-  // Reduce stock for ordered products
   for (const item of cartItems) {
     await Product.findByIdAndUpdate(item.product._id, {
       $inc: { quantity: -item.quantity },
     });
   }
 
-  // Clear the user's cart after order is placed
   await Cart.deleteMany({ user: userId });
 
   return order;
 };
 
-const getOrders = async ({ userId }: { userId?: string }) => {
-  return await Order.find({ user: userId })
+
+//allow user's to see their own orders
+const getOrdersFromDb = async (_id:ObjectId ) => {
+  const {convertedId} =  _id;
+  return await Order.find({user:convertedId})
     .populate({
       path: "products.product",
     })
     .populate("user");
 };
-const getOrdersByAdminFromDb = async () => {
+
+//todo: maybe no need
+const getOrdersByAdminFromDb = async (email: string) => {
   return await Order.find()
     .populate({
       path: "products.product",
@@ -65,14 +63,16 @@ const getOrdersByAdminFromDb = async () => {
     .populate("user");
 };
 
+//this one Working perfectly
 const getAllOrdersFromDb = async () => {
   return await Order.find()
     .populate("user", "-password")
     .populate("products.product");
 };
+
 const getSuccessfullPaymentsFromDb = async () => {
-  const status = "completed"
-  return await Order.find({status})
+  const status = "completed";
+  return await Order.find({ status })
     .populate("user", "-password")
     .populate("products.product");
 };
@@ -88,7 +88,10 @@ const changeOrderStatusIntoDb = async (orderId: string, status: string) => {
     { new: true, runValidators: true }
   );
 };
-const changePrescriptionStatusIntoDb = async (orderId: string, isPrescriptionSubmitted: boolean) => {
+const changePrescriptionStatusIntoDb = async (
+  orderId: string,
+  isPrescriptionSubmitted: boolean
+) => {
   return await Cart.findByIdAndUpdate(
     orderId,
     { isPrescriptionSubmitted },
@@ -98,10 +101,11 @@ const changePrescriptionStatusIntoDb = async (orderId: string, isPrescriptionSub
 
 export const orderService = {
   createOrder,
-  getOrders,
+  getOrdersFromDb,
   getAllOrdersFromDb,
   deleteOrderFromDb,
   changeOrderStatusIntoDb,
   getOrdersByAdminFromDb,
-  getSuccessfullPaymentsFromDb,changePrescriptionStatusIntoDb
+  getSuccessfullPaymentsFromDb,
+  changePrescriptionStatusIntoDb,
 };
