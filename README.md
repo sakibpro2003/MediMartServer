@@ -1,79 +1,120 @@
-# 🚴‍♂️ Bi-Cycle Store Backend
+# MediMart Backend
 
-## 📌 Project Overview
+## 📌 Overview
+MediMart is an online medicine e-commerce platform that allows users to purchase medicines with ease. This repository contains the backend API built using Node.js, Express, and MongoDB, handling authentication, product management, orders, payments, and more.
 
-The **Bi-Cycle Store Backend** is a robust RESTful API built with **Node.js, Express, and MongoDB** to support the Bi-Cycle Store application. It handles **user authentication, product management, order processing, and payment integration** with role-based access control for customers and admins.
+## 🚀 Live API URL
+[Live API](#) (Replace with actual URL after deployment)
 
-## 🛠️ Tech Stack
-
-- **Backend Framework:** Node.js, Express.js
-- **Database:** MongoDB with Mongoose ODM
-- **Authentication:** JWT (JSON Web Token) & bcrypt for password hashing
-- **State Management:** Redux (in frontend)
-- **API Testing:** Postman
-- **Deployment:** Vercel (or any cloud hosting)
-- **Payment Gateway:** SSLCommerz / Stripe (configurable)
-
----
-
-## 🚀 Features
-
-### **🔐 Authentication & Authorization**
-- Role-based access control (Customer & Admin)
-- JWT authentication with secure password hashing
-- User registration, login, and logout functionality
-
-### **🛍️ Product Management**
-- **Admins can:**
-  - Add, edit, and delete bicycles
-  - Manage stock levels and pricing
-- **Users can:**
-  - View all bicycles with filtering & sorting options
-  - View detailed product descriptions
-
-### **📦 Order Management**
-- Users can place orders and track order status
-- Admins can update order status (pending, shipped, delivered, canceled)
-- Stock levels automatically update after an order is placed
-
-### **💳 Payment Integration**
-- Supports secure payments via **SSLCommerz / Stripe**
-- Payment validation and order confirmation
-
-### **📡 API Endpoints**
-| Method | Endpoint               | Description                        | Access |
-|--------|------------------------|------------------------------------|--------|
-| POST   | `/api/auth/register`    | Register a new user               | Public |
-| POST   | `/api/auth/login`       | User login & token generation     | Public |
-| GET    | `/api/products`         | Get all bicycles                  | Public |
-| GET    | `/api/products/:id`     | Get a single bicycle by ID        | Public |
-| POST   | `/api/products`         | Add a new bicycle                 | Admin  |
-| PUT    | `/api/products/:id`     | Update bicycle details            | Admin  |
-| DELETE | `/api/products/:id`     | Delete a bicycle                  | Admin  |
-| POST   | `/api/orders`           | Place a new order                 | User   |
-| GET    | `/api/orders/:userId`   | Get user orders                   | User   |
-| PUT    | `/api/orders/:orderId`  | Update order status               | Admin  |
+## 🛠️ Technologies Used
+- **Node.js** - Runtime environment
+- **Express.js** - Web framework for Node.js
+- **MongoDB** - NoSQL database
+- **Mongoose** - ODM for MongoDB
+- **JWT** - Authentication and Authorization
+- **Bcrypt** - Password hashing
+- **ShurjoPay** - Payment Gateway Integration
 
 ---
 
-## ⚙️ Installation & Setup
+## 🏗️ Installation & Setup
 
-npm install
+### 📌 Prerequisites
+Make sure you have the following installed:
+- [Node.js](https://nodejs.org/en/download/) (v16+ recommended)
+- [MongoDB](https://www.mongodb.com/try/download/community)
 
-- Create a **.env** file and configure the following:
-```env
-PORT=5000
-DATABASE_URL="your mongodb url"
-BCRYPT_SALT_ROUNDS=12
-JWT_ACCESS_SECRET="jwt secret"
-SP_ENDPOINT=https://sandbox.shurjopayment.com
-SP_USERNAME="your surjopay username"
-SP_PASSWORD="your surjopay password"
-SP_PREFIX=SP
-```
+### 🔧 Steps to Run Locally
+1. **Clone the repository**
+   ```sh
+   git clone https://github.com/your-username/medimart-backend.git
+   cd medimart-backend
+   ```
+2. **Install dependencies**
+   ```sh
+   npm install
+   ```
+3. **Set up environment variables**
+   - Create a `.env` file in the root directory and add the following:
+     ```env
+     PORT=5000
+     DATABASE_URL="your mongodb url"
+     BCRYPT_SALT_ROUNDS=12
+     JWT_ACCESS_SECRET="jwt secret"
+     SP_ENDPOINT=https://sandbox.shurjopayment.com
+     SP_USERNAME="your surjopay username"
+     SP_PASSWORD="your surjopay password"
+     SP_PREFIX=SP
+     ```
+4. **Run the server**
+   ```sh
+   npm run dev
+   ```
+   The server will start on `http://localhost:5000`.
 
+---
 
-## Run the server
-npm run dev
+## 🔀 API Routes
 
+### 👤 Authentication
+| Method | Endpoint       | Description          |
+|--------|--------------|----------------------|
+| POST   | `/api/auth/register` | User registration |
+| POST   | `/api/auth/login` | User login |
+
+### 🏥 Products
+| Method | Endpoint        | Description            |
+|--------|----------------|------------------------|
+| GET    | `/api/products` | Get all products      |
+| GET    | `/api/products/:id` | Get product by ID |
+
+### 📦 Orders
+| Method | Endpoint       | Description             |
+|--------|--------------|-------------------------|
+| POST   | `/api/orders` | Place a new order |
+| GET    | `/api/orders/:id` | Get order details |
+
+### 💳 Payments
+| Method | Endpoint       | Description             |
+|--------|--------------|-------------------------|
+| POST   | `/api/payments/initiate` | Initiate payment |
+| POST   | `/api/payments/verify` | Verify payment |
+
+---
+
+## 🚀 Deployment
+
+### 📌 Deploy on Vercel
+1. Install Vercel CLI:
+   ```sh
+   npm i -g vercel
+   ```
+2. Run deployment:
+   ```sh
+   vercel
+   ```
+3. Set up environment variables in Vercel dashboard.
+
+### 📌 Deploy on Render
+1. Create a new web service on [Render](https://render.com/).
+2. Connect your GitHub repository.
+3. Add environment variables in the **Settings** tab.
+4. Click **Deploy**.
+
+---
+
+## ❓ Troubleshooting
+- If the server doesn't start, ensure MongoDB is running and `.env` variables are set.
+- For database errors, check the `DATABASE_URL`.
+- If payments fail, verify **ShurjoPay** credentials.
+
+---
+
+## 🤝 Contributing
+Feel free to open issues or submit pull requests!
+
+---
+
+## 📜 License
+This project is licensed under the MIT License.
 

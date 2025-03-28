@@ -45,7 +45,7 @@ const createOrder = async (
 
 
 //allow user's to see their own orders
-const getOrdersFromDb = async (_id:ObjectId ) => {
+const getOrdersFromDb = async (_id:any ) => {
   const {convertedId} =  _id;
   return await Order.find({user:convertedId})
     .populate({
@@ -55,7 +55,7 @@ const getOrdersFromDb = async (_id:ObjectId ) => {
 };
 
 //todo: maybe no need
-const getOrdersByAdminFromDb = async (email: string) => {
+const getOrdersByAdminFromDb = async () => {
   return await Order.find()
     .populate({
       path: "products.product",

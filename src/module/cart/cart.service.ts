@@ -5,6 +5,7 @@ import { TCartPayload } from "../../types/cartPayload.types";
 import mongoose, { ObjectId, Types } from "mongoose";
 import Product from "../products/product.model";
 import AppError from "../../app/error/AppError";
+import { TUser } from "../../types/user";
 
 const addToCart = async ({
   payload,
@@ -61,15 +62,16 @@ const clearCart = async (id: string) => {
   return clearCart;
 };
 
-const getAllProductsFromCartService = async (user) => {
+const getAllProductsFromCartService = async (user:TUser) => {
   const res = await Cart.find({ user }).populate("product");
   return res;
 };
 
-const removeItemFromCartDb = async (_id, user) => {
+
+const removeItemFromCartDb = async (_id: string, user: TUser) => {
   try {
     const objectId = new mongoose.Types.ObjectId(_id);
-    const userId = new mongoose.Types.ObjectId(user); // Ensure `user` is an ObjectId
+    const userId = new mongoose.Types.ObjectId(user._id); // ✅ Pass user._id instead of the entire user object
 
     const find = await Cart.findOne({ user: userId, _id: objectId });
 
@@ -81,6 +83,7 @@ const removeItemFromCartDb = async (_id, user) => {
     throw error;
   }
 };
+
 
 
 

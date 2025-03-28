@@ -73,15 +73,11 @@ const updateUserInfo = catchAsync(async (req: Request, res: Response) => {
     data: responseData,
   });
 });
+
 const getUserProfile = catchAsync(async (req: Request, res: Response) => {
-  console.log(req.body);
-
   const user = req.user;
-
   const email = user?.email as string;
-
-  const result = await UserServices.getUserProfileFromDb({ email });
-  console.log(result, "result");
+  const result = await UserServices.getUserProfileFromDb(email);
 
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, "User not found or update failed");

@@ -11,8 +11,8 @@ const updateUserInfoIntoDb = async (_id: string, userData: Partial<TUser>) => {
   const result = await User.findByIdAndUpdate(_id, userData, { new: true });
   return result;
 };
-const getUserProfileFromDb = async (email: TUser) => {
-  const result = await User.findOne(email).select("-password");
+const getUserProfileFromDb = async (email: string) => {
+  const result = await User.findOne({email}).select("-password");
   return result;
 };
 const getAllUserFromDb = async () => {

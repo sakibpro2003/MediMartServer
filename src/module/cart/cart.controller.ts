@@ -36,7 +36,6 @@ const addToCart = catchAsync(async (req: Request, res: Response) => {
     data: addItemToCart,
   });
 });
-// import mongoose from "mongoose"; // Ensure mongoose is imported
 
 const increaseAmount = catchAsync(async (req: Request, res: Response) => {
   if (!req.user) {
@@ -67,7 +66,6 @@ const increaseAmount = catchAsync(async (req: Request, res: Response) => {
 
   const userId = getUser._id;
 
-  // Convert to ObjectId
   const objectProductId = new mongoose.Types.ObjectId(productId);
   const product = await Product.findById(objectProductId);
 
@@ -155,7 +153,6 @@ const decreaseAmount = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-
 const clearCart = catchAsync(async (req: Request, res: Response) => {
   const userEmail = req.user?.email;
 
@@ -196,8 +193,8 @@ const getAllProductsFromCart = catchAsync(
     }
     const email = req.user.email;
     const getUser = await User.findOne({ email: email });
-    const user = getUser?._id as unknown as ObjectId;
-    const cartProducts = await cartServices.getAllProductsFromCartService(user);
+    const userId = getUser?._id as any;
+    const cartProducts = await cartServices.getAllProductsFromCartService(userId);
     return res.status(httpStatus.OK).json({
       success: true,
       message: "Orders retrieved successfully!",
@@ -216,10 +213,9 @@ const removeItemController = catchAsync(async (req: Request, res: Response) => {
   const { productId } = req.params;
   const email = req.user.email;
   const getUser = await User.findOne({ email: email });
-  const user = getUser?._id as unknown as ObjectId;
+  const user = getUser?._id as any;
 
   const result = await cartServices.removeItemFromCartDb(productId, user);
-  // const cartProducts = await cartServices.getAllProductsFromCartService(user);
   return res.status(httpStatus.OK).json({
     success: true,
     message: "Item removed successfully!",
@@ -232,5 +228,6 @@ export const cartController = {
   clearCart,
   removeItemController,
   getAllProductsFromCart,
-  increaseAmount,decreaseAmount
+  increaseAmount,
+  decreaseAmount,
 };

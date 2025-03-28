@@ -4,7 +4,7 @@ import catchAsync from "../../app/utils/catchAsync";
 import { orderService } from "./order.service";
 import { User } from "../User/user.model";
 import Cart from "../cart/cart.model";
-import mongoose from "mongoose";
+import mongoose, { ObjectId } from "mongoose";
 
 const createOrder = catchAsync(async (req: Request, res: Response) => {
   if (!req.user) {
@@ -74,7 +74,7 @@ const getUserSpecificOrders = catchAsync(
     console.log(user, "user");
     const userId = user?._id.toString();
     console.log(userId, "user");
-    const convertedId = new mongoose.Types.ObjectId(userId);
+    const convertedId:any = new mongoose.Types.ObjectId(userId);
     const orders = await orderService.getOrdersFromDb({ convertedId });
     return res.status(httpStatus.OK).json({
       success: true,
@@ -85,22 +85,6 @@ const getUserSpecificOrders = catchAsync(
 );
 
 const getOrdersByAdmin = catchAsync(async (req: Request, res: Response) => {
-  // const user = req.user;
-  // console.log(user, "user69");
-  // const {email} = user;
-  // const _id = await User.find(email)
-  // console.log('getOrdersByAdmin')
-  //   if (!_id || !mongoose.Types.ObjectId.isValid(_id)) {
-  //     return res.status(httpStatus.BAD_REQUEST).json({
-  //       success: false,
-  //       message: "Invalid or missing order ID",
-  //     });
-  //   }
-
-  // const objectId = new mongoose.Types.ObjectId(_id); // Convert _id to ObjectId
-  // console.log(objectId, "by admin");
-  // console.log(_id,"amar id")
-
   const orders = await orderService.getOrdersByAdminFromDb();
 
   return res.status(httpStatus.OK).json({
