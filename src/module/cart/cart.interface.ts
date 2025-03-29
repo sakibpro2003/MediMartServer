@@ -12,6 +12,7 @@ export interface ICart extends Document {
   user: Types.ObjectId | TUser;
   product:Types.ObjectId;
   quantity:number;
+  image:string;
   isPrescriptionSubmitted?:boolean;
   totalPrice: number;
   createdAt?: Date;
