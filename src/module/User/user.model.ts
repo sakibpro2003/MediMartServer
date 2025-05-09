@@ -8,6 +8,17 @@ const userSchema = new Schema<TUser, UserModel>(
       type: String,
       required: true,
     },
+    profileImage:{
+      type:String,
+      required:false,
+      // default:"https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg"
+
+    },
+    coverImage:{
+      type:String,
+      required:false,
+      // default:"https://standardbredtrader.com.au/assets/images/no-image.jpg",
+    },
     address: {
       type: String,
       required: false,

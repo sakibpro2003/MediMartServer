@@ -6,6 +6,35 @@ const productsSchema = new Schema<IProduct>(
     name: { type: String, required: true, trim: true },
     image: { type: String, required: true },
     description: { type: String, required: true, trim: true },
+    form:{
+      type:String,
+      required:true,
+      enum:["Tablet", "Syrup", "Injection", "Ointment"]
+    },
+    rating:{
+      type:Number,
+      required:false,
+      default: 1,
+    },
+    discount:{
+      type:Number,
+      required:false,
+
+    },
+    packSize:{
+      type:String,
+      required:true
+    },
+    dosage:{
+      type:String,
+      required:true,
+    
+    },
+    category:{
+      type:String,
+      required:true,
+      enum:["Painkiller", "Antibiotic", "Cold", "Vitamin", "Antacid"],
+    },
     price: {
       type: Number,
       required: true,

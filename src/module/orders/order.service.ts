@@ -54,7 +54,6 @@ const getOrdersFromDb = async (_id:any ) => {
     .populate("user");
 };
 
-//todo: maybe no need
 const getOrdersByAdminFromDb = async () => {
   return await Order.find()
     .populate({
@@ -63,7 +62,6 @@ const getOrdersByAdminFromDb = async () => {
     .populate("user");
 };
 
-//this one Working perfectly
 const getAllOrdersFromDb = async () => {
   return await Order.find()
     .populate("user", "-password")

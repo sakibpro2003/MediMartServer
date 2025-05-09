@@ -13,7 +13,7 @@ const createProduct = async (req: Request, res: Response) => {
   } catch (error) {
     res.json({
       status: false,
-      message: "somthing went wrong",
+      message: "something went wrong",
       error,
     });
   }

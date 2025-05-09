@@ -22,20 +22,17 @@ const auth = (...requiredRoles: TRequiredRoles[]) => {
         throw new AppError(httpStatus.UNAUTHORIZED, "Invalid token format");
       }
 
-      // ✅ Verify JWT Token
       const decoded = jwt.verify(token, config.jwt_access_secret as string) as JwtPayload & { _id: string; role: TRequiredRoles };
 
-      // ✅ Attach user data to `req`
       req.user = decoded;
 
-      // ✅ Check role-based access
       if (requiredRoles.length && !requiredRoles.includes(decoded.role)) {
         throw new AppError(httpStatus.FORBIDDEN, "You do not have permission to access this resource");
       }
 
       next();
     } catch (error) {
-      next(error); // Pass the error to global error handler
+      next(error);
     }
   });
 };

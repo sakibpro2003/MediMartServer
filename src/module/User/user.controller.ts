@@ -10,8 +10,12 @@ import { TUser } from "./user.interface";
 const createUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const userData = req.body;
+    console.log(userData,'userdata')
     const email = userData.email;
     const phone = userData.phone;
+    const profileImage = userData.profileImage;
+    console.log('hiiiiii')
+    console.log(profileImage,'primage')
     const findUser = await User.findOne({ email });
     const findUserByPhone = await User.findOne({ phone });
     if (findUser) {
@@ -26,6 +30,8 @@ const createUser = catchAsync(
       _id: result?._id,
       name: result?.name,
       email: result?.email,
+      profileImage:result?.profileImage,
+
     };
     sendResponse(res, {
       statusCode: httpStatus.CREATED,
@@ -64,6 +70,8 @@ const updateUserInfo = catchAsync(async (req: Request, res: Response) => {
     name: result.name,
     phone: result.phone,
     gender: result.gender,
+    profileImage:result.profileImage,
+    coverImage:result.coverImage,
   };
 
   sendResponse(res, {
@@ -77,6 +85,7 @@ const updateUserInfo = catchAsync(async (req: Request, res: Response) => {
 const getUserProfile = catchAsync(async (req: Request, res: Response) => {
   const user = req.user;
   const email = user?.email as string;
+  // const profileImage = user?.profileImage as string;
   const result = await UserServices.getUserProfileFromDb(email);
 
   if (!result) {

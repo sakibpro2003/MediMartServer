@@ -8,6 +8,7 @@ import mongoose, { ObjectId } from "mongoose";
 
 const createOrder = catchAsync(async (req: Request, res: Response) => {
   if (!req.user) {
+    console.log(req.user,'req.user')
     return res.status(httpStatus.UNAUTHORIZED).json({
       success: false,
       message: "Unauthorized: User ID not found in token.",
@@ -33,7 +34,7 @@ const createOrder = catchAsync(async (req: Request, res: Response) => {
   const requiresPrescription = cartItems.some(
     (item) =>
       (item.product as any).requiredPrescription &&
-      !item.isPrescriptionSubmitted
+      !item.image
   );
   if (requiresPrescription) {
     return res.status(httpStatus.BAD_REQUEST).json({

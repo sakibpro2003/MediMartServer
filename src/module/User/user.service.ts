@@ -4,21 +4,25 @@ import bcrypt from "bcrypt";
 
 const createUserIntoDb = async (userData: TUser) => {
   const result = await User.create(userData);
-
+  console.log(result,'result service crate')
   return result;
 };
+
 const updateUserInfoIntoDb = async (_id: string, userData: Partial<TUser>) => {
   const result = await User.findByIdAndUpdate(_id, userData, { new: true });
   return result;
 };
+
 const getUserProfileFromDb = async (email: string) => {
-  const result = await User.findOne({email}).select("-password");
+  const result = await User.findOne({ email }).select("-password");
   return result;
 };
+
 const getAllUserFromDb = async () => {
   const result = await User.find();
   return result;
 };
+
 const changeUserStatusIntoDb = async (userId: string, isBlocked: boolean) => {
   const result = await User.findByIdAndUpdate(
     userId,
