@@ -8,8 +8,9 @@ const productsSchema = new Schema<IProduct>(
     description: { type: String, required: true, trim: true },
     form:{
       type:String,
-      required:true,
-      enum:["Tablet", "Syrup", "Injection", "Ointment"]
+      required:false,
+      enum:["Tablet", "Syrup", "Injection", "Ointment","Capsulec"],
+      default:"Tablet"
     },
     rating:{
       type:Number,
@@ -23,17 +24,20 @@ const productsSchema = new Schema<IProduct>(
     },
     packSize:{
       type:String,
-      required:true
+      required:false,
+      default:"10 tablets"
     },
     dosage:{
       type:String,
-      required:true,
+      required:false,
+      default:"2 Times a day"
     
     },
     category:{
       type:String,
-      required:true,
+      required:false,
       enum:["Painkiller", "Antibiotic", "Cold", "Vitamin", "Antacid"],
+      default:"Antibiotic",
     },
     price: {
       type: Number,
